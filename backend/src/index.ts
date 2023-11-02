@@ -10,6 +10,10 @@ import cors from "cors";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { GraphQLError } from "graphql";
+import { buildSchema } from "type-graphql";
+import AdsResolver from "./resolvers/adsResolver";
+import TagsResolver from "./resolvers/tagsResolver";
+import CategoriesResolver from "./resolvers/categoriesResolver";
 
 const app = express();
 const port = 4000;
@@ -221,66 +225,11 @@ app.listen(port, async () => {
   console.log(`Server running on http://localhost:${port}`);
 });
 
-const typeDefs = `
-  type Ad {
-    id: Int
-    title: String
-    owner: String
-    description: String
-    price: Int
-    location: String
-    createdAt: String
-  }
-
-  type Category {
-    id: Int
-    name: String
-  }
-
-  type Tags {
-    id: Int
-    name: String
-  }
-
-  type Query {
-    ads: [Ad]
-  }
-`;
-
-const books = [
-  {
-    title: "The Awakening",
-    author: "Kate Chopin",
-  },
-  {
-    title: "City of Glass",
-    author: "Paul Auster",
-  },
-];
-
-const resolvers: any = {
-  Query: {
-    ads: () => {
-      return Ad.find({ relations: { category: true, tags: true } });
-    },
-    getAdById: async (_: any, { id }: { id: number }) => {
-      const ad = await Ad.findOne({
-        where: { id },
-        relations: { category: true, tags: true },
-      });
-      if (ad === null) throw new GraphQLError("NOT_FOUND");
-      return ad;
-    },
-  },
-};
-
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-});
-
-startStandaloneServer(server, {
-  listen: { port: 4000 },
-}).then(({ url }) => {
-  console.log(`🚀  Server ready at: ${url}`);
+buildSchema({
+  resolvers: [TagsResolver, AdsResolver, CategoriesResolver],
+}).then((schema) => {
+  const server = new ApolloServer({ schema });
+  startStandaloneServer(server, {
+    listen: { port: 4001 },
+  }).then(({ url }) => console.log(`graphql Server listening on url: ${url}`));
 });
