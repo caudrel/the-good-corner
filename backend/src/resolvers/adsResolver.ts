@@ -7,7 +7,7 @@ import { validate } from "class-validator";
 @Resolver(Ad)
 class AdsResolver {
   @Query(() => Ad)
-  async getAdById(@Arg("id") id: string) {
+  async getAdById(@Arg("id", () => Int) id: string) {
     const ad = await Ad.findOne({
       where: { id: parseInt(id, 10) },
       relations: { category: true, tags: true },
