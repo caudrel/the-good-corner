@@ -15,12 +15,7 @@ export default function AdminHeader() {
 
       <div className="flex flex-col">
         {navLinks.map((l) => (
-          <ActiveLink
-            key={l.href}
-            href={l.href}
-            className="p-2 rounded-md"
-            activeClassName="bg-slate-400"
-          >
+          <ActiveLink key={l.href} href={l.href} className="p-2 rounded-md" activeClassName="bg-slate-400">
             {l.label}
           </ActiveLink>
         ))}

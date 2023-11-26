@@ -6,11 +6,7 @@ import { Tag } from "./entities/tag";
 async function clearDB() {
   const runner = db.createQueryRunner();
   await runner.query("PRAGMA foreign_keys=OFF");
-  await Promise.all(
-    db.entityMetadatas.map(async (entity) =>
-      runner.query(`DROP TABLE IF EXISTS ${entity.tableName}`)
-    )
-  );
+  await Promise.all(db.entityMetadatas.map(async (entity) => runner.query(`DROP TABLE IF EXISTS ${entity.tableName}`)));
   await runner.query("PRAGMA foreign_keys=ON");
   await db.synchronize();
 }
@@ -21,8 +17,7 @@ async function main() {
 
   const macbook = Ad.create({
     title: "Macbook pro",
-    description:
-      "MacBook Pro boosté par la puce M2 Pro ou M2 Max. Avec autonomie d'une journée et sublime écran Liquid Retina XDR",
+    description: "MacBook Pro boosté par la puce M2 Pro ou M2 Max. Avec autonomie d'une journée et sublime écran Liquid Retina XDR",
     owner: "Pierre",
     price: 1500,
     picture:
@@ -31,8 +26,7 @@ async function main() {
   });
   const keyboard = Ad.create({
     title: "Clavier logitech",
-    description:
-      "Clavier Bluetooth® fin et minimaliste avec des touches personnalisables.",
+    description: "Clavier Bluetooth® fin et minimaliste avec des touches personnalisables.",
     owner: "Jane",
     price: 30,
     picture:
@@ -44,8 +38,7 @@ async function main() {
     description: "Diesel, 150000km, etat correct. CT effectué il y a 3 mois",
     owner: "Mark",
     price: 4000,
-    picture:
-      "https://upload.wikimedia.org/wikipedia/commons/d/d9/Peugeot_206_Quicksilver_90.jpg",
+    picture: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Peugeot_206_Quicksilver_90.jpg",
     location: "Paris",
   });
   const renault = Ad.create({
@@ -53,8 +46,7 @@ async function main() {
     description: "Essence, 250000km, pour pièces",
     owner: "Amélie",
     price: 200,
-    picture:
-      "https://auto.cdn-rivamedia.com/photos/annonce/big/renault-r5-r-5-gtl-confort-first-owner-144710006.jpg",
+    picture: "https://auto.cdn-rivamedia.com/photos/annonce/big/renault-r5-r-5-gtl-confort-first-owner-144710006.jpg",
     location: "Lyon",
   });
   const porsche = Ad.create({
@@ -62,8 +54,7 @@ async function main() {
     description: "Essence, 50000km, etat nickel",
     owner: "Steve",
     price: 50000,
-    picture:
-      "https://www.turbo.fr/sites/default/files/2022-01/high-mileage-991.2-porsche-911-for-sale.jpg",
+    picture: "https://www.turbo.fr/sites/default/files/2022-01/high-mileage-991.2-porsche-911-for-sale.jpg",
     location: "Bordeaux",
   });
 

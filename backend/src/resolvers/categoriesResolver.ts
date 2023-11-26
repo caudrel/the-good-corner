@@ -2,18 +2,12 @@ import { Resolver, Mutation, Arg, Query } from "type-graphql";
 import { GraphQLError } from "graphql";
 import { validate } from "class-validator";
 import { Like } from "typeorm";
-import {
-  Category,
-  NewCategoryInput,
-  UpdateCategoryInput,
-} from "../entities/category";
+import { Category, NewCategoryInput, UpdateCategoryInput } from "../entities/category";
 
 @Resolver(Category)
 class CategoriesResolver {
   @Mutation(() => Category)
-  async createCategory(
-    @Arg("data", { validate: true }) data: NewCategoryInput
-  ) {
+  async createCategory(@Arg("data", { validate: true }) data: NewCategoryInput) {
     const newCategory = new Category();
     Object.assign(newCategory, data);
     const newCategoryWithId = await newCategory.save();
@@ -34,10 +28,7 @@ class CategoriesResolver {
     return "ok";
   }
   @Mutation(() => Category)
-  async updateCategory(
-    @Arg("categoryId") id: number,
-    @Arg("data", { validate: true }) data: UpdateCategoryInput
-  ) {
+  async updateCategory(@Arg("categoryId") id: number, @Arg("data", { validate: true }) data: UpdateCategoryInput) {
     const categoryToUpdate = await Category.findOneBy({ id });
     if (!categoryToUpdate) throw new GraphQLError("not found");
     Object.assign(categoryToUpdate, data);

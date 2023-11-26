@@ -1,8 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import AdCard from "./AdCard";
-import { Ad } from "@/types";
-import axios from "axios";
-import { useQuery, gql } from "@apollo/client";
 
 export type RecentAd = {
   id: number;
@@ -11,33 +8,14 @@ export type RecentAd = {
   picture: string;
 };
 
+import { useAdsQuery } from "@/graphql/generated/schema";
+
 export default function RecentAds() {
-  // const [ads, setAds] = useState<Ad[]>([]);
+  const { data, loading } = useAdsQuery();
 
-  const GET_RECENT_ADS = gql`
-    query Ads {
-      ads {
-        id
-        title
-        price
-        picture
-      }
-    }
-  `;
-
-  const { data, loading } = useQuery<{ ads: RecentAd[] }>(GET_RECENT_ADS);
   if (loading) return "Chargement...";
 
   const ads = data?.ads || [];
-
-  console.log(data);
-
-  // useEffect(() => {
-  //   axios
-  //     .get<Ad[]>("http://localhost:4000/ads")
-  //     .then((res) => setAds(res.data))
-  //     .catch(console.error);
-  // }, []);
 
   return (
     <div className="pt-6">
