@@ -1,47 +1,40 @@
 import Layout from "@/components/Layout";
-import { Ad, Category } from "@/types";
+import { Category } from "@/types";
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
 import axios from "axios";
-import { UserCircleIcon } from "@heroicons/react/24/outline";
-import { MapPinIcon } from "@heroicons/react/24/outline";
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
+
+import { useCategoriesQuery, useGetAdByIdQuery, useUpdateAdMutation } from "@/graphql/generated/schema";
+import { useQuery } from "@apollo/client";
 
 export default function EditAd() {
   const router = useRouter();
+  const [updateAd] = useUpdateAdMutation();
   const { adId } = router.query;
 
-  const [ad, setAd] = useState<Ad>();
+  const { data: adData } = useGetAdByIdQuery({
+    variables: { adId: typeof adId === "string" ? parseInt(adId, 10) : 0 },
+    skip: !router.isReady,
+  });
+  const ad = adData?.getAdById;
 
-  useEffect(() => {
-    if (typeof ad === "undefined")
-      axios
-        .get<Ad>(`http://localhost:4000/ads/${adId}`)
-        .then((res) => setAd(res.data))
-        .catch(console.error);
-  }, [adId]);
-
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    axios
-      .get<Category[]>("http://localhost:4000/categories")
-      .then((res) => setCategories(res.data))
-      .catch(console.error);
-  }, []);
+  const { data } = useCategoriesQuery();
+  const categories = data?.categories || [];
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const formJSON: any = Object.fromEntries(formData.entries());
     formJSON.price = parseFloat(formJSON.price);
+    formJSON.category = { id: parseInt(formJSON.category, 10) };
 
-    axios
-      .patch(`http://localhost:4000/ads/${ad?.id}`, formJSON)
-      .then((res) => {
-        router.push(`/ads/${res.data.id}`);
-      })
+    updateAd({
+      variables: {
+        adId: typeof adId === "string" ? parseInt(adId, 10) : 0,
+        data: formJSON as any,
+      },
+    })
+      .then((res) => router.push(`/ads/${res.data?.updateAd.id}`))
       .catch(console.error);
   };
 
@@ -149,13 +142,7 @@ export default function EditAd() {
               <label className="label" htmlFor="category">
                 <span className="label-text">Catégorie</span>
               </label>
-              <select
-                className="select select-bordered"
-                id="category"
-                name="category"
-                required
-                defaultValue={ad.category?.id}
-              >
+              <select className="select select-bordered" id="category" name="category" required defaultValue={ad.category?.id}>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
@@ -165,9 +152,7 @@ export default function EditAd() {
             </div>
           </div>
 
-          <button className="btn btn-primary text-white mt-12 w-full">
-            Enregistrer
-          </button>
+          <button className="btn btn-primary text-white mt-12 w-full">Enregistrer</button>
         </form>
       )}
     </Layout>

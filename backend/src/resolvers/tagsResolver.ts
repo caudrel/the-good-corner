@@ -27,10 +27,7 @@ class TagsResolver {
     return "ok";
   }
   @Mutation(() => Tag)
-  async updateTag(
-    @Arg("tagId") id: number,
-    @Arg("data", { validate: true }) data: UpdateTagInput
-  ) {
+  async updateTag(@Arg("tagId") id: number, @Arg("data", { validate: true }) data: UpdateTagInput) {
     const tagToUpdate = await Tag.findOneBy({ id });
     if (!tagToUpdate) throw new GraphQLError("not found");
     Object.assign(tagToUpdate, data);

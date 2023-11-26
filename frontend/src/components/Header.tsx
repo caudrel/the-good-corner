@@ -4,18 +4,13 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import qs from "query-string";
+import { useCategoriesQuery } from "@/graphql/generated/schema";
 
 export default function Header() {
   const router = useRouter();
 
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    axios
-      .get<Category[]>("http://localhost:4000/categories")
-      .then((res) => setCategories(res.data))
-      .catch(console.error);
-  }, []);
+  const { data } = useCategoriesQuery();
+  const categories = data?.categories || [];
 
   const [search, setSearch] = useState("");
 
@@ -84,9 +79,7 @@ export default function Header() {
 
           return (
             <div
-              className={`p-2 rounded-lg mt-3 cursor-pointer ${
-                isActive ? "bg-[#ffa41b] text-white" : ""
-              }`}
+              className={`p-2 rounded-lg mt-3 cursor-pointer ${isActive ? "bg-[#ffa41b] text-white" : ""}`}
               onClick={() => {
                 router.push(
                   "/search?" +

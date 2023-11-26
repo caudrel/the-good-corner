@@ -3,17 +3,12 @@ import { Category } from "@/types";
 import { FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useCategoriesQuery, useCreateAdMutation } from "@/graphql/generated/schema";
 
 export default function NewAd() {
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    axios
-      .get<Category[]>("http://localhost:4000/categories")
-      .then((res) => setCategories(res.data))
-      .catch(console.error);
-  }, []);
-
+  const [createAd] = useCreateAdMutation();
+  const { data } = useCategoriesQuery();
+  const categories = data?.categories || [];
   const router = useRouter();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -21,13 +16,9 @@ export default function NewAd() {
     const formData = new FormData(e.target as HTMLFormElement);
     const formJSON: any = Object.fromEntries(formData.entries());
     formJSON.price = parseFloat(formJSON.price);
-
-    axios
-      .post("http://localhost:4000/ads", formJSON)
-      .then((res) => {
-        router.push(`/ads/${res.data.id}`);
-      })
-      .catch(console.error);
+    formJSON.category = { id: parseInt(formJSON.category) };
+    const res = await createAd({ variables: { data: { ...formJSON } } });
+    router.push(`/ads/${res.data?.createAd.id}`);
   };
 
   return (
@@ -69,28 +60,14 @@ export default function NewAd() {
             <label className="label" htmlFor="location">
               <span className="label-text">Localisation</span>
             </label>
-            <input
-              type="text"
-              name="location"
-              id="location"
-              required
-              placeholder="Paris"
-              className="input input-bordered w-full max-w-xs"
-            />
+            <input type="text" name="location" id="location" required placeholder="Paris" className="input input-bordered w-full max-w-xs" />
           </div>
 
           <div className="form-control w-full max-w-xs">
             <label className="label" htmlFor="owner">
               <span className="label-text">Auteur</span>
             </label>
-            <input
-              type="text"
-              name="owner"
-              id="owner"
-              required
-              placeholder="Link"
-              className="input input-bordered w-full max-w-xs"
-            />
+            <input type="text" name="owner" id="owner" required placeholder="Link" className="input input-bordered w-full max-w-xs" />
           </div>
         </div>
 
@@ -113,27 +90,14 @@ export default function NewAd() {
             <label className="label" htmlFor="price">
               <span className="label-text">Prix</span>
             </label>
-            <input
-              required
-              type="number"
-              name="price"
-              id="price"
-              min={0}
-              placeholder="30"
-              className="input input-bordered w-full max-w-xs"
-            />
+            <input required type="number" name="price" id="price" min={0} placeholder="30" className="input input-bordered w-full max-w-xs" />
           </div>
 
           <div className="form-control w-full max-w-xs">
             <label className="label" htmlFor="category">
               <span className="label-text">Catégorie</span>
             </label>
-            <select
-              className="select select-bordered"
-              id="category"
-              name="category"
-              required
-            >
+            <select className="select select-bordered" id="category" name="category" required>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
@@ -143,9 +107,7 @@ export default function NewAd() {
           </div>
         </div>
 
-        <button className="btn btn-primary text-white mt-12 w-full">
-          Envoyer
-        </button>
+        <button className="btn btn-primary text-white mt-12 w-full">Envoyer</button>
       </form>
     </Layout>
   );

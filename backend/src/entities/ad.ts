@@ -1,17 +1,8 @@
-import {
-  Entity,
-  BaseEntity,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  Column,
-  ManyToOne,
-  JoinTable,
-  ManyToMany,
-} from "typeorm";
+import { Entity, BaseEntity, PrimaryGeneratedColumn, CreateDateColumn, Column, ManyToOne, JoinTable, ManyToMany } from "typeorm";
 import { Length, Min } from "class-validator";
+import { ObjectType, Field, Int, InputType } from "type-graphql";
 import { Category } from "./category";
 import { Tag } from "./tag";
-import { ObjectType, Field, Int, InputType } from "type-graphql";
 import { ObjectId } from "../utils";
 
 @Entity()
@@ -23,7 +14,6 @@ export class Ad extends BaseEntity {
 
   @Column({ length: 50 })
   @Field()
-  @Length(5, 50, { message: "Le titre doit contenir entre 5 et 50 caractères" })
   title: string;
 
   @Column({ nullable: true, type: "text" })
@@ -36,7 +26,6 @@ export class Ad extends BaseEntity {
 
   @Column({ type: "float" })
   @Field()
-  @Min(0, { message: "le prix doit etre positif" })
   price: number;
 
   @Column()
@@ -94,7 +83,6 @@ export class NewAdInput {
   @Field(() => [ObjectId], { nullable: true })
   tags?: ObjectId[];
 }
-
 @InputType()
 export class UpdateAdInput {
   @Field({ nullable: true })
@@ -112,7 +100,7 @@ export class UpdateAdInput {
   price?: number;
 
   @Field({ nullable: true })
-  location?: string;
+  city?: string;
 
   @Field({ nullable: true })
   picture?: string;
@@ -122,4 +110,7 @@ export class UpdateAdInput {
 
   @Field(() => [ObjectId], { nullable: true })
   tags?: ObjectId[];
+
+  @Field({ nullable: true })
+  location?: string;
 }
