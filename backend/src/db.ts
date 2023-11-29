@@ -1,4 +1,7 @@
 import { DataSource } from "typeorm";
+import { Category } from "./entities/category";
+import { Tag } from "./entities/tag";
+import { Ad } from "./entities/ad";
 
 export default new DataSource({
   type: "postgres",
@@ -7,7 +10,7 @@ export default new DataSource({
   username: process.env.DB_USER || "postgres",
   password: process.env.DB_PASS || "postgres",
   database: process.env.DB_NAME || "postgres",
-  entities: ["src/entities/*.ts"],
+  entities: [Ad, Tag, Category],
   synchronize: true,
   logging: true,
 });
