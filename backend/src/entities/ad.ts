@@ -44,7 +44,7 @@ export class Ad extends BaseEntity {
     cascade: true,
     onDelete: "CASCADE",
   })
-  @Field()
+  @Field(() => Category)
   category: Category;
 
   @JoinTable()

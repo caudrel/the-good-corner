@@ -25,3 +25,10 @@ services:
       dockerfile: Dockerfile.production
     ports:
       - 3000:3000
+
+  upload-service:
+    build: file-upload-service
+    ports:
+      - 8000:8000
+    volumes:
+      - ./file-upload-service/files:/app/files
