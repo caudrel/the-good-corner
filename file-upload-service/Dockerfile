@@ -9,6 +9,7 @@ COPY package.json bun.lockb ./
 RUN bun i --frozen-lockfile
 
 COPY ./src ./src
+COPY ./files ./files
 
 RUN bun build ./src/index.ts --compile --outfile cli
 
